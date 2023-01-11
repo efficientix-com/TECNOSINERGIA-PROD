@@ -1,0 +1,9 @@
+<advancedpdftemplate scriptid="custtmpl_146_4820964_293" standard="STDTMPLEMPTY">
+  <description></description>
+  <displaysourcecode>T</displaysourcecode>
+  <isinactive>F</isinactive>
+  <preferred>F</preferred>
+  <printtype>TRANSACTION</printtype>
+  <title>EFX FE - Invoice Template (FE2020)</title>
+  <trantype>CUSTINVC</trantype>
+</advancedpdftemplate>
