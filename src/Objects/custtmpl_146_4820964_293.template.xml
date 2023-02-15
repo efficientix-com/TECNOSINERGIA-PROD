@@ -144,20 +144,21 @@
                     </tr></table>
             </macro>
         </macrolist>
-        <style type="text/css">* {
-            <#if .locale == "zh_CN">
-                font-family: NotoSans, NotoSansCJKsc, sans-serif;
-            <#elseif .locale == "zh_TW">
-                font-family: NotoSans, NotoSansCJKtc, sans-serif;
-            <#elseif .locale == "ja_JP">
-                font-family: NotoSans, NotoSansCJKjp, sans-serif;
-            <#elseif .locale == "ko_KR">
-                font-family: NotoSans, NotoSansCJKkr, sans-serif;
-            <#elseif .locale == "th_TH">
-                font-family: NotoSans, NotoSansThai, sans-serif;
-            <#else>
-                font-family: NotoSans, sans-serif;
-            </#if>
+        <style type="text/css">
+            * {
+                <#if .locale == "zh_CN">
+                    font-family: NotoSans, NotoSansCJKsc, sans-serif;
+                <#elseif .locale == "zh_TW">
+                    font-family: NotoSans, NotoSansCJKtc, sans-serif;
+                <#elseif .locale == "ja_JP">
+                    font-family: NotoSans, NotoSansCJKjp, sans-serif;
+                <#elseif .locale == "ko_KR">
+                    font-family: NotoSans, NotoSansCJKkr, sans-serif;
+                <#elseif .locale == "th_TH">
+                    font-family: NotoSans, NotoSansThai, sans-serif;
+                <#else>
+                    font-family: NotoSans, sans-serif;
+                </#if>
             }
             table {
                 font-size: 9pt;
@@ -340,12 +341,7 @@
             <td colspan="3" style="font-size:9px;">${record.duedate}</td>
 
         </tr>
-        <!--<tr>
-<th colspan= "18" style="width: 100%;">Comentarios</th>
-</tr>
-<tr>
-<td colspan= "18" style="width: 100%; font-size:10px;">${record.memo}</td>
-</tr>-->
+
     </table>
 
     <#if record.item?has_content>
@@ -365,8 +361,6 @@
 
         <#if tipoGBL=="" || tipoGBL=="Detalle de Articulo">
             <table class="itemtable" style="width: 100%; margin-top: 3px; border: 1px; border-color: #e3e3e3;">
-                <#assign array_series = []>
-                <#assign posicion = 0>
 
                 <#list record.item as item>
                     <#if item_index==0>
@@ -395,7 +389,7 @@
                     </#if>
                     <#assign "line_number"= line_number - line_discount>
                     <#if item.quantity?has_content || item.itemtype=="Description"|| item.itemtype=="Markup">
-                        <tr>
+                        <#--  <tr>  -->
                             <#assign "desglose_json" = item.custcol_efx_fe_tax_json>
                             <#if desglose_json?has_content || item.itemtype=="Description">
                                 <#if item.itemtype!="Description">
@@ -403,65 +397,121 @@
                                 <#else>
                                     <#assign "desglose" = {}>
                                 </#if>
-                                <td align="center" colspan="3" line-height="150%" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.quantity}</td>
+                                <#assign series_array = []>
 
-                                <td colspan="14" style="margin: 0; padding-top: 2px;">
-                                    <table style="width: 100%">
-                                        <tr>
-                                            <td colspan= "14" style="border-left: 1px; border-color: #e3e3e3; font-size: 7pt; padding-right: 1px; padding-left: 1px; padding-top: 1px; padding-bottom: 0px;"><b><#if Add_name=="Amazon">${item.custcol_efx_fe_amazon_code}<#else>${item.item}</#if></b><br />${item.description}</td>
-                                        </tr>
-
-
-                                        <#if item.custcol_pedimento_text?has_content>
-                                            <tr style="padding-right: 1px; padding-left: 1px; padding-top: 1px; padding-bottom: 1px;">
-                                                <td colspan= "14" style="border-left: 1px; border-color: #e3e3e3; font-size: 6pt; padding-right: 1px; padding-left: 1px; padding-top: 1px; padding-bottom: 1px;">${item.custcol_pedimento_text}</td>
-
-                                            </tr>
-
-                                        </#if>
-
-                                    </table>
-                                </td>
-                                <td align="center" colspan="4" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.custcol_mx_txn_line_sat_item_code?keep_before(" ")}</td>
-                                <td align="center" colspan="3" line-height="150%" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.units}</td>
-                                <td align="center" colspan="5" style="border-left: 1px; border-color: #e3e3e3; font-size: 6pt; padding-top: 2px;">${item.custcol_efx_fe_serie_lote}</td>
-                                <#--  <#assign tipo_art = item.itemtype>
                                 <#assign data = "">
-                                <#if tipo_art != "Descuento">
-                                    <#if item.custcol_efx_fe_serie_lote?has_content>
-                                        <#assign array_series = item.custcol_efx_fe_serie_lote?split("<br />")>
+
+                                <#if item.custcol_efx_fe_serie_lote?has_content>
+                                    <#assign data = item.custcol_efx_fe_serie_lote?replace("- ", "-")>
+                                    <#if data?contains("-")>
+                                        <#assign series_array = data?split("-")?reverse>
+
+                                    <#else>
+                                        <#assign series_array = series_array+[item.custcol_efx_fe_serie_lote]>
                                     </#if>
                                 </#if>
-                                <#if posicion lt array_series?size>
-                                    <td align="center" colspan="5" style="border-left: 1px; border-color: #e3e3e3; font-size: 6pt; padding-top: 2px;">
-                                        <#list array_series as series>
-                                            <#assign seriessplit = series?split("-")>
-                                            <#list seriessplit as seriesspli>
-                                                <#assign serie = seriesspli?split("(")>
-                                                <table>
-                                                    <#list serie as serie>
-                                                        <tr>
-                                                            <td>
-                                                                ${serie}
-                                                            </td>
-                                                        </tr>
-                                                    </#list>
-                                                </table>
-                                            </#list>
-                                        </#list>
-                                    </td>
-                                </#if>  -->
-                                <td align="center" colspan="5" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.rate?string[",##0.00"]}</td>
 
-                                <#assign "descuento_total" = descuento_total + importe_discount[item_index+1]>
-                                <td align="center" colspan="4" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.tax1amt}</td>
-                                <td align="center" colspan="5" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.amount}</td>
+                                <#assign posicion = 0>
+
+                                <#if series_array?is_sequence>
+                                    <#list series_array as serie>
+                                        <tr>
+                                            <#if serie?is_first >
+                                                <td align="center" colspan="3" line-height="150%" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.quantity}</td>
+                                                <td colspan="14" style="margin: 0; padding-top: 2px; border-left: 1px; border-color: #e3e3e3">
+                                                    <table style="width: 100%">
+                                                        <tr>
+                                                            <td colspan= "14" style=" font-size: 7pt; padding-right: 1px; padding-left: 1px; padding-top: 1px; padding-bottom: 0px;"><b><#if Add_name=="Amazon">${item.custcol_efx_fe_amazon_code}<#else>${item.item}</#if></b><br />${item.description}</td>
+                                                        </tr>
+
+
+                                                        <#if item.custcol_pedimento_text?has_content>
+                                                            <tr style="padding-right: 1px; padding-left: 1px; padding-top: 1px; padding-bottom: 1px;">
+                                                                <td colspan= "14" style="border-left: 1px; border-color: #e3e3e3; font-size: 6pt; padding-right: 1px; padding-left: 1px; padding-top: 1px; padding-bottom: 1px;">${item.custcol_pedimento_text}</td>
+
+                                                            </tr>
+
+                                                        </#if>
+
+                                                    </table>
+                                                </td>
+                                                <td align="center" colspan="4" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.custcol_mx_txn_line_sat_item_code?keep_before(" ")}</td>
+                                                <td align="center" colspan="3" line-height="150%" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.units}</td>
+                                                <#--  <td colspan="3">${series_array?seq_contains("")?string("yes", "no")} <br /> ${series_array?size}</td>  -->
+                                                <#--  <td colspan="3">${series_array?size}</td>  -->
+                                                <#--  aquiiiiiiiiiiii  -->
+                                                <td colspan="5" style="border-left: 1px; border-color: #e3e3e3; font-size: 6pt;">
+                                                    <#if item.custcol_efx_fe_serie_lote?has_content>
+                                                        <#if series_array?size gt posicion>
+                                                            ${series_array[posicion]}
+                                                        </#if>
+
+                                                    </#if>
+                                                </td>
+                                                <td align="center" colspan="5" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.rate?string[",##0.00"]}</td>
+                                                <#assign "descuento_total" = descuento_total + importe_discount[item_index+1]>
+                                                <td align="center" colspan="4" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.tax1amt}</td>
+                                                <td align="center" colspan="5" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.amount}</td>
+                                            <#else>
+                                                <td align="center" colspan="3" line-height="150%" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;"></td>
+                                                <td colspan="14" style="margin: 0; padding-top: 2px; border-left: 1px; border-color: #e3e3e3"></td>
+                                                <td align="center" colspan="4" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;"></td>
+                                                <td align="center" colspan="3" line-height="150%" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;"></td>
+                                                <#--  aquiiiiiiiiiiii  -->
+                                                <td colspan="5" style="border-left: 1px; border-color: #e3e3e3; font-size: 6pt;">
+                                                    <#if item.custcol_efx_fe_serie_lote?has_content>
+                                                        <#if series_array?size gt posicion>
+                                                            ${series_array[posicion]}
+                                                        </#if>
+
+                                                    </#if>
+                                                </td>
+                                                <td align="center" colspan="5" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;"></td>
+                                                <td align="center" colspan="4" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;"></td>
+                                                <td align="center" colspan="5" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;"></td>
+                                            </#if>
+                                        </tr>
+                                        <#assign posicion = posicion+1>
+                                    </#list>
+                                <#else>
+                                    <tr>
+                                        <td align="center" colspan="3" line-height="150%" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.quantity}</td>
+                                        <td colspan="14" style="margin: 0; padding-top: 2px; border-left: 1px; border-color: #e3e3e3">
+                                            <table style="width: 100%">
+                                                <tr>
+                                                    <td colspan= "14" style="font-size: 7pt; padding-right: 1px; padding-left: 1px; padding-top: 1px; padding-bottom: 0px;"><b><#if Add_name=="Amazon">${item.custcol_efx_fe_amazon_code}<#else>${item.item}</#if></b><br />${item.description}</td>
+                                                </tr>
+
+
+                                                <#if item.custcol_pedimento_text?has_content>
+                                                    <tr style="padding-right: 1px; padding-left: 1px; padding-top: 1px; padding-bottom: 1px;">
+                                                        <td colspan= "14" style="border-left: 1px; border-color: #e3e3e3; font-size: 6pt; padding-right: 1px; padding-left: 1px; padding-top: 1px; padding-bottom: 1px;">${item.custcol_pedimento_text}</td>
+
+                                                    </tr>
+
+                                                </#if>
+
+                                            </table>
+                                        </td>
+                                        <td align="center" colspan="4" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.custcol_mx_txn_line_sat_item_code?keep_before(" ")}</td>
+                                        <td align="center" colspan="3" line-height="150%" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.units}</td>
+                                        <#--  aquiiiiiiiiiiii  -->
+                                        <td colspan="5">
+                                            ${item.custcol_efx_fe_serie_lote}
+                                        </td>
+                                        <td align="center" colspan="5" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.rate?string[",##0.00"]}</td>
+                                        <#assign "descuento_total" = descuento_total + importe_discount[item_index+1]>
+                                        <td align="center" colspan="4" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.tax1amt}</td>
+                                        <td align="center" colspan="5" style="border-left: 1px; border-color: #e3e3e3;font-size: 6pt; padding-top: 2px;">${item.amount}</td>
+                                    </tr>
+                                </#if>
+
                             </#if>
-                        </tr>
+                        <#--  </tr>  -->
 
                     </#if>
-                <#assign posicion = posicion + 1>
-                </#list></table>
+                </#list>
+            </table>
 
         <#elseif tipoGBL=="Articulo Global">
             <table class="itemtable" style="width: 100%; margin-top: 3px; border: 1px; border-color: #e3e3e3;">
@@ -729,36 +779,37 @@
                 </#list></table>
         <#else>
             <table class="itemtable" style="width: 100%; margin-top: 3px; border: 1px; border-color: #e3e3e3;">
-                <#list record.item as item><#if item_index==0>
-                    <thead>
-                    <tr style= "margin-top: 0px; padding-top: 0px; padding-bottom: 0px">
-                        <th align="center" colspan="2" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Partida</th>
-                        <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Código</th>
-                        <th align="center" colspan="5" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Código<br/>Clave</th>
-                        <th align="center" colspan="18" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">
-                            <table style="width: 100%; margin-top: 0px; margin-bottom: 0px; border: 1px; border-color: #e3e3e3">
-                                <tr>
-                                    <th align="center" colspan="18" style="font-size: 5pt; padding-top: 0px; padding-bottom: 2px; padding-left: 0px; padding-right: 0px;">Descripción</th>
-                                </tr>
-                                <tr>
-                                    <td align= "left" colspan="4" style="font-size: 4pt; padding-top: 0px; padding-bottom: 0px;">Base:</td>
-                                    <td align= "left" colspan="4" style="font-size: 4pt; padding-top: 0px; padding-bottom: 0px; margin-top: 0px">Impuesto:</td>
-                                    <td align= "left" colspan="3" style="font-size: 4pt; padding-top: 0px; padding-bottom: 0px;">Factor:</td>
-                                    <td align= "left" colspan="3" style="font-size: 4pt; padding-top: 0px; padding-bottom: 0px;">Tasa:</td>
-                                    <td align= "left" colspan="4" style="font-size: 4pt; padding-top: 0px; padding-bottom: 0px;">Importe:</td>
-                                </tr>
-                            </table></th>
+                <#list record.item as item>
+                    <#if item_index==0>
+                        <thead>
+                            <tr style= "margin-top: 0px; padding-top: 0px; padding-bottom: 0px">
+                                <th align="center" colspan="2" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Partida</th>
+                                <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Código</th>
+                                <th align="center" colspan="5" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Código<br/>Clave</th>
+                                <th align="center" colspan="18" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">
+                                    <table style="width: 100%; margin-top: 0px; margin-bottom: 0px; border: 1px; border-color: #e3e3e3">
+                                        <tr>
+                                            <th align="center" colspan="18" style="font-size: 5pt; padding-top: 0px; padding-bottom: 2px; padding-left: 0px; padding-right: 0px;">Descripción</th>
+                                        </tr>
+                                        <tr>
+                                            <td align= "left" colspan="4" style="font-size: 4pt; padding-top: 0px; padding-bottom: 0px;">Base:</td>
+                                            <td align= "left" colspan="4" style="font-size: 4pt; padding-top: 0px; padding-bottom: 0px; margin-top: 0px">Impuesto:</td>
+                                            <td align= "left" colspan="3" style="font-size: 4pt; padding-top: 0px; padding-bottom: 0px;">Factor:</td>
+                                            <td align= "left" colspan="3" style="font-size: 4pt; padding-top: 0px; padding-bottom: 0px;">Tasa:</td>
+                                            <td align= "left" colspan="4" style="font-size: 4pt; padding-top: 0px; padding-bottom: 0px;">Importe:</td>
+                                        </tr>
+                                    </table></th>
 
-                        <th align="center" colspan="2" style="font-size: 4pt; padding-left: 0px; padding-right: 0px;">Unidad</th>
-                        <th align="center" colspan="5" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">UPC</th>
-                        <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Cantidad</th>
-                        <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Precio sin<br/>impuesto</th>
-                        <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Impuesto</th>
-                        <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Descuento</th>
-                        <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">${item.amount@label}</th>
-                    </tr>
-                    </thead>
-                </#if>
+                                <th align="center" colspan="2" style="font-size: 4pt; padding-left: 0px; padding-right: 0px;">Unidad</th>
+                                <th align="center" colspan="5" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">UPC</th>
+                                <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Cantidad</th>
+                                <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Precio sin<br/>impuesto</th>
+                                <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Impuesto</th>
+                                <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">Descuento</th>
+                                <th align="center" colspan="4" style="font-size: 5pt; padding-left: 0px; padding-right: 0px;">${item.amount@label}</th>
+                            </tr>
+                        </thead>
+                    </#if>
 
                     <#assign "tipo_articulo" = item.item?keep_before(" ")>
                     <#assign "line_number"= item_index + 1>
@@ -766,6 +817,7 @@
                         <#assign "line_discount" = line_discount + 1>
                     </#if>
                     <#assign "line_number"= line_number - line_discount>
+
                     <#if item.quantity?has_content>
                         <tr>
 
@@ -965,27 +1017,11 @@
                         </tr>
                     </#if>
 
-                </#list></table>
+                </#list>
+            </table>
         </#if>
 
-
-
-
     </#if>
-
-    <table>
-
-        <#assign "desglose_json_body" = record.custbody_efx_fe_tax_json>
-        <#assign "desglose_body" = desglose_json_body?eval>
-        <#assign "desglose_ieps" = desglose_body.rates_ieps>
-        <#assign "desglose_iva" = desglose_body.rates_iva>
-        <#assign "desglose_ret" = desglose_body.rates_retencion>
-        <#assign "desglose_loc" = desglose_body.rates_local>
-
-
-
-    </table>
-
 
     <table style="width: 100%; margin-top: 5px; padding: 0px; border: 1px; border-color: #e3e3e3;">
         <tr>
@@ -1156,7 +1192,6 @@
         </#if>
     </#if>
 
-
     <#if certData?has_content>
         <table class="tablascompletas" style="margin-top:5px;"><tr>
                 <td colspan="3" class="cabecera"><b>Folio Fiscal</b></td>
@@ -1198,8 +1233,6 @@
             </tr>
         </table>
     </#if>
-
-
 
     </body>
 </pdf>
